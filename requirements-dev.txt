@@ -1,0 +1,12 @@
+# Development Requirements (SQLite)
+# Use this for local development without PostgreSQL
+
+Django==5.0.0
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+PyJWT==2.8.0
+cryptography==41.0.7
+python-dotenv==1.0.0
+django-ratelimit==4.1.0
+
+# For production with PostgreSQL, use requirements.txt instead
