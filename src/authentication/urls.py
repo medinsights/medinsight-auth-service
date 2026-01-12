@@ -11,11 +11,15 @@ from .views import (
     LogoutAllView,
     CurrentUserView,
     ChangePasswordView,
+    HealthCheckView,
 )
 
 app_name = 'authentication'
 
 urlpatterns = [
+    # Health Check
+    path('health/', HealthCheckView.as_view(), name='health'),
+    
     # Registration & Verification
     path('register/', RegisterView.as_view(), name='register'),
     path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),

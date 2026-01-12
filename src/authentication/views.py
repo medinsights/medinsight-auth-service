@@ -468,3 +468,33 @@ class ChangePasswordView(APIView):
         return Response({
             'message': 'Password changed successfully. Please login again.'
         }, status=status.HTTP_200_OK)
+
+
+class HealthCheckView(APIView):
+    """
+    Health check endpoint for Kubernetes liveness/readiness probes
+    """
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        """Return health status"""
+        from django.db import connection
+        
+        try:
+            # Check database connectivity
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+            
+            return Response({
+                'status': 'healthy',
+                'service': 'auth-service',
+                'timestamp': timezone.now().isoformat()
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Health check failed: {e}")
+            return Response({
+                'status': 'unhealthy',
+                'service': 'auth-service',
+                'error': str(e),
+                'timestamp': timezone.now().isoformat()
+            }, status=status.HTTP_503_SERVICE_UNAVAILABLE)

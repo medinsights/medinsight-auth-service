@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: medinsights
+spec:
+  replicas: 3  # High availability
+  template:
+    spec:
+      containers:
+      - name: auth-service
+        image: medinsights/auth-service:latest
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"

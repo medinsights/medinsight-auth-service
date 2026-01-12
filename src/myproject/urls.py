@@ -1,5 +1,5 @@
 """
-URL configuration for auth_service project.
+URL configuration for myproject project.
 """
 from django.contrib import admin
 from django.urls import path, include

@@ -9,7 +9,7 @@ def main():
     # Add src directory to Python path
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
     
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'auth_service.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

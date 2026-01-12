@@ -1,5 +1,5 @@
 """
-WSGI config for auth_service project.
+WSGI config for myproject project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,15 +8,9 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
-import sys
-from pathlib import Path
-
-# Add src directory to Python path
-base_dir = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(base_dir))
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'auth_service.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
 
 application = get_wsgi_application()

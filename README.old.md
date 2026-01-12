@@ -140,9 +140,6 @@ The service uses RS256 (asymmetric) JWT signing for production security.
 ### Generate Keys (Local Development)
 
 ```bash
-# Create keys directory
-mkdir -p keys
-
 # Generate RSA private key
 openssl genrsa -out keys/private.pem 2048
 

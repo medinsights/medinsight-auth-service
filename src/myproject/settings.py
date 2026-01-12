@@ -4,6 +4,7 @@ Security-focused configuration with RS256 support
 """
 
 from pathlib import Path
+from urllib.parse import urlparse
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
@@ -22,7 +23,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-change-in-producti
 # Production: DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,host.docker.internal').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -43,7 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Must be before CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -52,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'auth_service.urls'
+ROOT_URLCONF = 'myproject.urls'
 
 TEMPLATES = [
     {
@@ -70,15 +71,41 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'auth_service.wsgi.application'
+WSGI_APPLICATION = 'myproject.wsgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database (supports DATABASE_URL: sqlite or postgres)
+_db_url = os.getenv('DATABASE_URL', f"sqlite:///{(BASE_DIR / 'db.sqlite3')}" )
+_parsed = urlparse(_db_url)
+
+if _parsed.scheme in ('postgres', 'postgresql'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': _parsed.path.lstrip('/'),
+            'USER': _parsed.username or '',
+            'PASSWORD': _parsed.password or '',
+            'HOST': _parsed.hostname or 'localhost',
+            'PORT': str(_parsed.port) if _parsed.port else '5432',
+        }
     }
-}
+elif _parsed.scheme == 'sqlite':
+    _name = _parsed.path.lstrip('/')
+    if not os.path.isabs(_name):
+        _name = str(BASE_DIR / _name)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': _name,
+        }
+    }
+else:
+    # Fallback to SQLite if unknown scheme
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(BASE_DIR / 'db.sqlite3'),
+        }
+    }
 
 # Custom User Model
 AUTH_USER_MODEL = 'authentication.User'
@@ -129,7 +156,13 @@ REST_FRAMEWORK = {
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = os.getenv(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://127.0.0.1:5173'
+    'http://localhost:5173,http://127.0.0.1:5173,http://localhost:30080'
+).split(',')
+
+# Ensure CSRF trusts the gateway origin in dev
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:8000,http://127.0.0.1:8000,http://localhost:30080'
 ).split(',')
 
 CORS_ALLOW_CREDENTIALS = True  # Required for cookies
@@ -156,8 +189,8 @@ JWT_SETTINGS = {
     'PUBLIC_KEY_PATH': os.getenv('JWT_PUBLIC_KEY_PATH', 'keys/public.pem'),
     
     # Token Settings
-    'ISSUER': 'auth-service-api',
-    'AUDIENCE': 'medinsight-frontend',
+    'ISSUER': 'myproject-api',
+    'AUDIENCE': 'myproject-frontend',
 }
 
 # Cookie Settings for Refresh Token

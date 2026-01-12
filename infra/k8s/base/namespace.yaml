@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: medinsights
+  labels:
+    name: medinsights
+    app: medinsights-platform
