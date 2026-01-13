@@ -23,7 +23,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-change-in-producti
 # Production: DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,host.docker.internal').split(',')
+# Allow Kong Gateway to forward requests with various hostnames and ports
+ALLOWED_HOSTS = ['*']  # In production, restrict this to specific domains
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,host.docker.internal').split(',')
 
 # Application definition
 INSTALLED_APPS = [
