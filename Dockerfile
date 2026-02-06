@@ -31,4 +31,4 @@ EXPOSE 8001
 USER app
 
 # Run migrations and start gunicorn
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py seed_users && gunicorn myproject.wsgi:application --workers 3 --bind 0.0.0.0:${PORT}"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py seed_users && gunicorn myproject.wsgi:application --workers 3 --timeout 120 --graceful-timeout 30 --keep-alive 5 --bind 0.0.0.0:${PORT} --access-logfile - --error-logfile -"]
